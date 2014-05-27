@@ -1,0 +1,90 @@
+from Tkinter import *
+import Pmw
+import sys, string
+import ProgressBar
+
+class AppShell(Pmw.MegaWidget):
+	appversion= '1.0'
+	appname = 'Generic Application Frame'
+	copyright= 'Copyright YYYY Your Company. All Rights Reserved'
+	contactname= 'Your Name'
+	contactphone= '(999) 555-1212'
+	contactemail= 'youremail@host.com'
+	frameWidth= 450
+	frameHeight= 320
+	padx = 5
+	pady = 5
+	usecommandarea= 0
+	balloonhelp= 1
+	
+	busyCursor = 'watch'
+	
+	def __init__(self, **kw):
+		optiondefs = (
+			('padx', 1, Pmw.INITOPT),
+			('pady', 1, Pmw.INITOPT),
+			('framewidth', 1, Pmw.INITOPT),
+			('frameheight', 1, Pmw.INITOPT),
+			('usecommandarea', self.usecommandarea, Pmw.INITOPT))
+		self.defineoptions(kw, optiondefs)
+		
+		self.root = Tk()
+		self.initializeTk(self.root)
+		Pmw.initialise(self.root)
+		self.root.title(self.appname)
+		self.root.geometry('%dx%d' % (self.frameWidth, self.frameHeight))
+
+
+		# Initialize the base class
+		Pmw.MegaWidget.__init__(self, parent=self.root)
+
+		# Initialize the application
+		self.appInit()
+		
+		# Create the interface
+		self.__createInterface()
+		
+		# Create a table to hold the cursors for
+		# widgets which get changed when we go busy
+		self.preBusyCursors = None
+		
+		# Pack the container and set focus
+		# to ourselves
+		self._hull.pack(side=TOP, fill=BOTH, expand=YES)
+		self.focus_set()
+		# Initialize our options
+		self.initialiseoptions(AppShell)
+
+	def appInit(self):
+		# Called before interface is created (should be overridden).
+		pass
+		
+	def initializeTk(self, root):
+		# Initialize platform-specific options
+		if sys.platform == 'mac':
+			self.__initializeTk_mac(root)
+		elif sys.platform == 'win32':
+			self.__initializeTk_win32(root)
+		else:
+			self.__initializeTk_unix(root)
+			
+	def __initializeTk_colors_common(self, root):
+		root.option_add('*background', 'grey')
+		root.option_add('*foreground', 'black')
+		root.option_add('*EntryField.Entry.background', 'white')
+		root.option_add('*MessageBar.Entry.background', 'gray85')
+		root.option_add('*Listbox*background', 'white')
+		root.option_add('*Listbox*selectBackground', 'dark slate blue')
+		root.option_add('*Listbox*selectForeground', 'white')
+		
+	def __initializeTk_win32(self, root):
+		self.__initializeTk_colors_common(root)
+		root.option_add('*Font', 'Verdana 10 bold')
+		root.option_add('*EntryField.Entry.Font', 'Courier 10')
+		root.option_add('*Listbox*Font', 'Courier 10')
+		
+	def __initializeTk_mac(self, root):
+		self.__initializeTk_colors_common(root)
+		
+	def __initializeTk_unix(self, root):
+		self.__initializeTk_colors_common(root)
